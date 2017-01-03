@@ -1,0 +1,28 @@
+{
+  "name": "influx-express",
+  "version": "1.0.0",
+  "description": "Express Middleware for logging with InfluxDB Edit",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jackzampolin/influx-express.git"
+  },
+  "keywords": [
+    "influx",
+    "express",
+    "metrics"
+  ],
+  "author": "Jack Zampolin <jack@influxdb.com> (https://jackzampolin.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jackzampolin/influx-express/issues"
+  },
+  "homepage": "https://github.com/jackzampolin/influx-express#readme",
+  "dependencies": {
+    "influx": "^5.0.0-alpha.4",
+    "obj-extend": "^0.1.0"
+  }
+}
