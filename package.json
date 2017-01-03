@@ -1,6 +1,6 @@
 {
   "name": "influx-express",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Express Middleware for logging with InfluxDB",
   "main": "index.js",
   "scripts": {
