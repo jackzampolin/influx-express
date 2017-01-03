@@ -1,7 +1,7 @@
 {
   "name": "influx-express",
   "version": "1.0.0",
-  "description": "Express Middleware for logging with InfluxDB Edit",
+  "description": "Express Middleware for logging with InfluxDB",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
