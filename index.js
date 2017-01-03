@@ -1,29 +1,29 @@
-var express = require('express')
 var Influx = require('influx')
 var extend = require('obj-extend');
 var events = require('events')
 
-// TODO: Remove
-var app = express()
-
-var clientDefaults = {
-  protocol: "http",
-  host: "localhost",
-  port: 8086,
-  database: "node",
-  username: "",
-  password: "",
-  batchSize: 2,
-} 
-
-var influxURL = function (options) {
-  if (options.username && options.password) {
-    return (options.protocol + "://" + options.username + ":" + options.password + "@" + options.host + ":" + options.port + "/" + options.database)
+// Call the import to instantiate a middleware (req, res, next) 
+// function that logs response time to InfluxDB
+module.exports = function expressInfluxInit (options) {
+  // Default Influx connection settings
+  var clientDefaults = {
+    protocol: "http",
+    host: "localhost",
+    port: 8086,
+    database: "node",
+    username: "",
+    password: "",
+    batchSize: 2,
+  } 
+  
+  // This is a convinence function for creating the InfluxDB connection string
+  var influxURL = function (options) {
+    if (options.username && options.password) {
+      return (options.protocol + "://" + options.username + ":" + options.password + "@" + options.host + ":" + options.port + "/" + options.database)
+    }
+    return (options.protocol + "://" + options.host + ":" + options.port + "/" + options.database)
   }
-  return (options.protocol + "://" + options.host + ":" + options.port + "/" + options.database)
-}
-
-var influxExpress = function expressInfluxInit (options) {
+  
   // Merge user options into the defaults and create client
   options = extend(clientDefaults, options)
   var client = new Influx.InfluxDB(influxURL(options))
@@ -33,21 +33,23 @@ var influxExpress = function expressInfluxInit (options) {
   batch.points = [];
   
   // When each point is added check the size of the batch and send if >= batchSize
-  var checkBatch = function () {
+  var writePoints = function () {
     var len = this.points.length
-    if (len >= options.batchSize) {
+    
+    // Check the length of the point buffer
+    if (len >= options.batchSize) {  
       // Write the points and log error if any
-      client.writePoints(this.points).then(function (res) {
-        console.log(`wrote ${len} points`)
-      }).catch(function (error) {
+      client.writePoints(this.points).catch(function (error) {
         console.log(error.message)
       })
+      
+      // Reset point buffer
       this.points = []
     }
   }
   
   // Set event listener
-  batch.on("addPoint", checkBatch);
+  batch.on("addPoint", writePoints);
   
   // Express Middleware
   return function expressInflux (req, res, next) {
@@ -64,12 +66,12 @@ var influxExpress = function expressInfluxInit (options) {
         measurement: "requests",
         "tags": {
           "path": req.path,
-          "app": req.app.locals.title,
           "host": req.hostname,
           "verb": req.method,
+          "status": res.statusCode,
         },
         "fields": {
-          responseTime: responseTime,
+          "responseTime": responseTime,
         },
       })
       
@@ -94,16 +96,3 @@ var influxExpress = function expressInfluxInit (options) {
     }
   };
 };
-
-
-// #####################################
-// # FOR TESTING REMOVE BEFORE PUBLISH #
-// #####################################
-app.use(influxExpress())
-
-app.get('/', function (req, res) {
-  res.send('Hello World!')
-})
-
-console.log("app listening")
-app.listen(3000)
