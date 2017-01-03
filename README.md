@@ -4,6 +4,15 @@ This repository contains [express](https://expressjs.com/) [middleware](https://
 
 ### Usage
 
+First add `influx-express` to your project:
+
+```console
+$ cd /path/to/node/project
+$ npm install --save influx-express
+```
+
+To enable the express logging middleware do the following:
+
 ```js
 var express = require('express')
 var influxExpress = require('influx-express')
