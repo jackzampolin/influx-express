@@ -38,6 +38,7 @@ var influxOpts = {
   username: "myuser",
   password: "mypass",
   batchSize: 10,
+  measurement: "requests"
 }
 
 app.use(influxExpress(influxOpts))
