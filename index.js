@@ -14,6 +14,7 @@ module.exports = function expressInfluxInit (options) {
     username: "",
     password: "",
     batchSize: 2,
+    measurement: "requests"
   } 
   
   // This is a convinence function for creating the InfluxDB connection string
@@ -63,7 +64,7 @@ module.exports = function expressInfluxInit (options) {
       
       // Add the new point to the batch of points
       batch.points.push({
-        measurement: "requests",
+        measurement: options.measurement,
         "tags": {
           "path": req.path,
           "host": req.hostname,
